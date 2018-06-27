@@ -18,11 +18,10 @@ namespace MyWebApi.Models
         public DbSet<Project> Projects { get; set; }
         public DbSet<Tool> Tools { get; set; }
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-            //optionsBuilder.UseSqlServer(@"Host=localhost;Database=portfoliodb;Trusted_Connection=True;ConnectRetryCount=0;Username=postgres");
-        //    optionsBuilder.UseSqlServer(@"User ID = postgres; Server = localhost; Port = 5432; Database = portfoliodb; Integrated Security = true; Pooling = true;");
-            
-        //}
+        //Package Manager console commands for migrations:
+        // add-migration
+        // update-database
+
+        //https://docs.microsoft.com/en-us/ef/core/miscellaneous/cli/powershell
     }
 }

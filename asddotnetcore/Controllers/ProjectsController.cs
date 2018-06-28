@@ -29,18 +29,33 @@ namespace asddotnetcore.Controllers
 
         // GET api/projects
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<Project[]> Get()
         {
             
             logger.LogWarning("/api/projects GET");
-            return new string[] { "Projects:", "value2" };
+            var projects = _context.Projects;
+            if (projects == null)
+            {
+                logger.LogWarning("Projects not found...");
+                return NotFound();
+            }
+            return projects.ToArray();
         }
 
         // GET api/projects/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Project> Get(int id)
         {
-            return "value";
+            logger.LogWarning("/api/projects/"+id + " GET");
+            var project = _context.Projects.Find(id);
+            if (project == null)
+            {
+                logger.LogWarning("Project not found...");
+                return NotFound();
+            }
+
+            return project;
+            //return "value";
         }
 
         // POST api/projects

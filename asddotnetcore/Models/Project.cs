@@ -14,10 +14,10 @@ namespace MyWebApi.Models
         [DataType(DataType.Url)]
         public string ImgUrl { get; set; }
         public string ImgAlt { get; set; }
-        [StringLength(200, ErrorMessage = "Description cannot be longer than 200 characters.")]
+        [StringLength(256, ErrorMessage = "Description cannot be longer than 256 characters.")]
         public string Description { get; set; }
         //public Tool[] tools { get; set; }
-        [StringLength(1000, ErrorMessage = "Details cannot be longer than 1000 characters.")]
+        [StringLength(512, ErrorMessage = "Details cannot be longer than 512 characters.")]
         public string Details { get; set; }
         public string[] Extraimg { get; set; }
     }

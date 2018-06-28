@@ -2,24 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MyWebApi.Models;
 
 namespace asddotnetcore.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("MyPolicy")]
     public class ProjectsController : ControllerBase
     {
-        //ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
-        //private ILogger logger = loggerFactory.CreateLogger("ToolsController");
 
         ILogger logger = new LoggerFactory().AddConsole().CreateLogger("ProjectsController");
 
-        //public ProjectsController(ILoggerFactory loggerFactory)
-        //{
-        //    var logger = loggerFactory.CreateLogger("ToolsController-getAll");
-        //}
+        private readonly MyWebApiContext _context;
+
+        public ProjectsController(MyWebApiContext ctx)
+        {
+            _context = ctx;
+        }
 
 
 
@@ -41,9 +45,24 @@ namespace asddotnetcore.Controllers
 
         // POST api/projects
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Project project)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
+            }
+
+
+            _context.Projects.Add(project);
+            _context.SaveChanges();
+            //Newtonsoft.Json.JsonConvert.DeserializeObject<MyWebApi.Models.Project>(project);
+            
             //new row to db
+            logger.LogWarning("/api/projects POST : " + project.Name);
+            return Ok();
         }
 
         // PUT api/projects/5

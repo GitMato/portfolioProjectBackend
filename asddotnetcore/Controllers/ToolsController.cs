@@ -40,7 +40,7 @@ namespace asddotnetcore.Controllers
 
         // api/tools
         [HttpGet]
-        public ActionResult<Tool[]> Get()
+        public async Task<ActionResult<Tool[]>> Get()
         {
             logger.LogWarning("/api/tools GET");
             var tools = _context.Tools;
@@ -54,10 +54,10 @@ namespace asddotnetcore.Controllers
 
         // api/tools/{id}
         [HttpGet("{id}")]
-        public ActionResult<Tool> GetTool(int id)
+        public async Task<ActionResult<Tool>> GetTool(int id)
         {
             logger.LogWarning("/api/tools GET - GetTool with id of "+id+".");
-            var tool = _context.Tools.Find(id);
+            var tool = await _context.Tools.FindAsync(id);
             if (tool == null)
             {
                 logger.LogWarning("Tool does not exist...");
@@ -68,7 +68,7 @@ namespace asddotnetcore.Controllers
         
         // api/tools
         [HttpPost]
-        public IActionResult Post([FromBody] Tool tool)
+        public async Task<IActionResult> Post([FromBody] Tool tool)
         //public IActionResult Post([FromBody] string name)
         {
             logger.LogWarning("/api/tools POST with the name: "+ tool.Name);
@@ -79,8 +79,8 @@ namespace asddotnetcore.Controllers
             }
 
             //var tool = new Tool { Name = name };
-            _context.Tools.Add(tool);
-            _context.SaveChanges();
+            await _context.Tools.AddAsync(tool);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTool", new { id = tool.Id }, tool);
      

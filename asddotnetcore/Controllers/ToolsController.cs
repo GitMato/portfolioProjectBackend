@@ -88,14 +88,14 @@ namespace asddotnetcore.Controllers
 
         // PUT api/tools/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async void Put(int id, [FromBody] string value)
         {
             // modify row in db
         }
 
         // DELETE api/tools/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async void Delete(int id)
         {
             //Delete row
         }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyWebApi.Models;
+using Newtonsoft.Json;
 
 namespace asddotnetcore.Controllers
 {
@@ -60,8 +61,9 @@ namespace asddotnetcore.Controllers
 
         // POST api/projects
         [HttpPost]
-        public IActionResult Post([FromBody] Project project)
+        public ActionResult Post([FromBody] Project project)
         {
+            
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -70,14 +72,13 @@ namespace asddotnetcore.Controllers
                 return BadRequest(errors);
             }
 
-
+            //new row to db
             _context.Projects.Add(project);
             _context.SaveChanges();
-            //Newtonsoft.Json.JsonConvert.DeserializeObject<MyWebApi.Models.Project>(project);
-            
-            //new row to db
+
             logger.LogWarning("/api/projects POST : " + project.Name);
-            return Ok();
+            //return Ok();
+            return CreatedAtAction("Get", new { id = project.Id }, project);
         }
 
         // PUT api/projects/5
@@ -92,6 +93,18 @@ namespace asddotnetcore.Controllers
         public void Delete(int id)
         {
             //Delete row
+            logger.LogWarning("/api/projects/" + id + " DELETE");
+            var project = _context.Projects.Find(id);
+            if (project == null)
+            {
+                logger.LogWarning("Project not found...");
+                //return NotFound();
+            }
+            else
+            { 
+                _context.Projects.Remove(project);
+                _context.SaveChanges();
+            }
         }
     }
 }

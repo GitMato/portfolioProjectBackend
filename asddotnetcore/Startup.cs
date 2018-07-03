@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyIdentity.Models;
 using MyWebApi.Models;
 
 namespace asddotnetcore
@@ -48,8 +50,15 @@ namespace asddotnetcore
                 options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
             });
 
+            // Project and Tool context for fb
             services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
 
+            // identity context for db
+            services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
+                                                options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+            services.AddIdentity<Admin, IdentityRole>()
+                .AddEntityFrameworkStores<MyIdentityContext>()
+                .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

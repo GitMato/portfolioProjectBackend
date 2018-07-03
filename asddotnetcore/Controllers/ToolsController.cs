@@ -53,8 +53,8 @@ namespace asddotnetcore.Controllers
         }
 
         // api/tools/{id}
-        [HttpGet("/{id}")]
-        public ActionResult<Tool> GetTool([FromBody] int id)
+        [HttpGet("{id}")]
+        public ActionResult<Tool> GetTool(int id)
         {
             logger.LogWarning("/api/tools GET - GetTool with id of "+id+".");
             var tool = _context.Tools.Find(id);
@@ -68,26 +68,22 @@ namespace asddotnetcore.Controllers
         
         // api/tools
         [HttpPost]
-        public IActionResult Post([FromBody] string name)
-        //public IActionResult Create([FromBody] string name)
-        //[FromBody] Tool tool
+        public IActionResult Post([FromBody] Tool tool)
+        //public IActionResult Post([FromBody] string name)
         {
-            logger.LogWarning("/api/tools POST with the name: "+ name);
-            //return Ok();
+            logger.LogWarning("/api/tools POST with the name: "+ tool.Name);
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            var tool = new Tool { name = name };
+
+            //var tool = new Tool { Name = name };
             _context.Tools.Add(tool);
             _context.SaveChanges();
 
             return CreatedAtAction("GetTool", new { id = tool.Id }, tool);
-            //return Ok();
-
-
+     
         }
 
         // PUT api/tools/5

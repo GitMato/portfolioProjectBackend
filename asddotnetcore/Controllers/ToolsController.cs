@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore;
 
 //using Microsoft.Extensions.DependencyInjection;
 
@@ -40,16 +41,16 @@ namespace asddotnetcore.Controllers
 
         // api/tools
         [HttpGet]
-        public async Task<ActionResult<Tool[]>> Get()
+        public async Task<ActionResult<List<Tool>>> Get()
         {
             logger.LogWarning("/api/tools GET");
-            var tools = _context.Tools;
+            var tools = await _context.Tools.ToListAsync();
             if (tools == null)
             {
                 logger.LogWarning("Tools not found...");
                 return NotFound();
             }
-            return tools.ToArray();
+            return tools;
         }
 
         // api/tools/{id}

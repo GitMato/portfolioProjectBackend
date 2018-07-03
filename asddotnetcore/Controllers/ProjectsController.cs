@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyWebApi.Models;
 using Newtonsoft.Json;
@@ -30,17 +31,17 @@ namespace asddotnetcore.Controllers
 
         // GET api/projects
         [HttpGet]
-        public async Task<ActionResult<Project[]>> Get()
+        public async Task<ActionResult<List<Project>>> Get()
         {
             
             logger.LogWarning("/api/projects GET");
-            var projects = _context.Projects;
+            var projects = await _context.Projects.ToListAsync();
             if (projects == null)
             {
                 logger.LogWarning("Projects not found...");
                 return NotFound();
             }
-            return projects.ToArray();
+            return projects;
         }
 
         // GET api/projects/5
@@ -83,7 +84,7 @@ namespace asddotnetcore.Controllers
 
         // PUT api/projects/5
         [HttpPut("{id}")]
-        public async void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] string value)
         {
             // modify row in db
         }

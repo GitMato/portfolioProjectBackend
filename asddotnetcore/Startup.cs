@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyIdentity.Models;
 using MyWebApi.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace asddotnetcore
 {
@@ -23,7 +25,6 @@ namespace asddotnetcore
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
             
         }
         
@@ -44,34 +45,42 @@ namespace asddotnetcore
             }));
 
 
-            //miks tää on tässä? Eikö tän voisi tehä helpomminkin?
+            // Eikö tän voisi tehä helpomminkin?
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
             });
 
-            // Project and Tool context for fb
+            // Register Project and Tool context for db
             services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
 
-            // identity context for db
+            // Register identity context for db
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
                                                 options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+            // Register identity
             services.AddIdentity<Admin, IdentityRole>()
                 .AddEntityFrameworkStores<MyIdentityContext>()
                 .AddDefaultTokenProviders();
+
+            // JWT - get options from app settings (JwtIssuerOptions -class)
+            var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
+
+            // Configure JwtIssuerOptions
+            services.Configure<JwtIssuerOptions>(options =>
+            {
+                options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+                options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
+                //options.SigningCredentials = new SigningCredentials(_signinKey, SecurityAlgorithms.HmacSha256);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            
 
-            //Logger testing
-            //var loggerFactory = new LoggerFactory().AddConsole();
-
-            Console.WriteLine("Hello World!");
-
-            //loggerFactory.MinimumLevel = LogLevel.Debug;
-            //loggerFactory.AddDebug(LogLevel.Debug);
+            Console.WriteLine("Portfolio REST API");
+            
             var logger = loggerFactory.CreateLogger("Startup");
             logger.LogWarning("Hi!");
             logger.LogInformation("Hi info!");

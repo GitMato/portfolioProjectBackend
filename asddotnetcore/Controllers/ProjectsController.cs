@@ -87,9 +87,35 @@ namespace asddotnetcore.Controllers
         // PUT api/projects/5
         [Authorize]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(int id, [FromBody] Project project)
         {
             // modify row in db
+            var projectFromId = await _context.Projects.FindAsync(id);
+            if (projectFromId == null)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
+            }
+
+            projectFromId.Name = project.Name;
+            projectFromId.ImgUrl = project.ImgUrl;
+            projectFromId.ImgAlt = project.ImgAlt;
+            projectFromId.Tools = project.Tools;
+            projectFromId.Extraimg = project.Extraimg;
+            projectFromId.Description = project.Description;
+            projectFromId.Details = project.Details;
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("Get", new { id = project.Id }, project);
+
         }
 
         // DELETE api/projects/5

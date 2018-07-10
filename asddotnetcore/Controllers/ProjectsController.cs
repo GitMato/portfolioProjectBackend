@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,7 @@ namespace asddotnetcore.Controllers
         }
 
         // POST api/projects
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Project project)
         {
@@ -83,6 +85,7 @@ namespace asddotnetcore.Controllers
         }
 
         // PUT api/projects/5
+        [Authorize]
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
@@ -90,6 +93,7 @@ namespace asddotnetcore.Controllers
         }
 
         // DELETE api/projects/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async void Delete(int id)
         {

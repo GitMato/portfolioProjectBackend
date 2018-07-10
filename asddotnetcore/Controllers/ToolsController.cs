@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 //using Microsoft.Extensions.DependencyInjection;
 
@@ -66,8 +67,9 @@ namespace asddotnetcore.Controllers
             }
             return tool;
         }
-        
+
         // api/tools
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Tool tool)
         //public IActionResult Post([FromBody] string name)
@@ -88,15 +90,17 @@ namespace asddotnetcore.Controllers
         }
 
         // PUT api/tools/5
+        [Authorize]
         [HttpPut("{id}")]
-        public async void Put(int id, [FromBody] string value)
+        public void Put(int id, [FromBody] string value)
         {
             // modify row in db
         }
 
         // DELETE api/tools/5
+        [Authorize]
         [HttpDelete("{id}")]
-        public async void Delete(int id)
+        public void Delete(int id)
         {
             //Delete row
         }

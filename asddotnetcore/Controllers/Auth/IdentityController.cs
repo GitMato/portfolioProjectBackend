@@ -14,30 +14,40 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace asddotnetcore.Controllers
 {
+
+    
+
     [EnableCors("MyPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class IdentityController : Controller
     {
+        ILogger logger = new LoggerFactory().AddConsole().CreateLogger("IdentityController");
+
         private readonly SignInManager<Admin> _signInManager;
         private readonly UserManager<Admin> _userManager;
         private readonly MyIdentityContext _identityContext;
         private readonly IConfiguration _configuration;
+        private readonly JwtIssuerOptions _jwtOptions;
 
         public IdentityController(UserManager<Admin> userManager, 
                                   MyIdentityContext ctx, 
                                   SignInManager<Admin> signInManager,
-                                  IConfiguration configuration)
+                                  IConfiguration configuration,
+                                  IOptions<JwtIssuerOptions> jwtOptions)
         {
             _userManager = userManager;
             _identityContext = ctx;
             _signInManager = signInManager;
             _configuration = configuration;
+            _jwtOptions = jwtOptions.Value;
         }
 
         // GET: api/<controller>
@@ -76,11 +86,13 @@ namespace asddotnetcore.Controllers
 
             //await _signInManager.SignInAsync(user, false);
             //return await GenerateJwtToken(model.Email, user);
-
+            
             return Ok("Registration complete!");
+            //return Cre
         }
 
         // POST api/identity/login
+        [Produces("application/json")]
         [HttpPost]
         public async Task<object> Login([FromBody]LoginViewModel model)
         {
@@ -97,7 +109,10 @@ namespace asddotnetcore.Controllers
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
-            if (!result.Succeeded) return new BadRequestObjectResult(error: "Wrong username+password combination!");
+            if (!result.Succeeded)
+            {
+                return new BadRequestObjectResult(error: "Wrong username+password combination!");
+            }
 
             var admin = _userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
             return await GenerateJwtToken(model.Username, admin);
@@ -115,6 +130,8 @@ namespace asddotnetcore.Controllers
         //{
         //}
 
+        // no need for this
+        // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-2.1
         public string GenerateSaltedHash(string password)
         {
             // generate a 128-bit salt using a secure PRNG
@@ -146,24 +163,38 @@ namespace asddotnetcore.Controllers
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
+                //new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
 
-            // tähän jäin, jwtkey on varmaan eriniminen mulla
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
+            
+            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["SecretKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+            //var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
+            var expires = DateTime.Now.AddDays(1);
+            //var expires = Convert.ToDateTime(_jwtOptions.ValidFor);
 
             var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtIssuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
+                //_configuration["JwtIssuer"],
+                //_configuration["JwtAudience"],
+                claims: claims,
+                //expires: expires,
+                signingCredentials: creds,
+
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
+                //claims: claims,
+                //notBefore: _jwtOptions.NotBefore,
+                expires: expires
+                //signingCredentials: _jwtOptions.SigningCredentials
             );
 
+            
+
             return new JwtSecurityTokenHandler().WriteToken(token);
+             
         }
     }
 

@@ -92,17 +92,48 @@ namespace asddotnetcore.Controllers
         // PUT api/tools/5
         [Authorize]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(int id, [FromBody] Tool tool)
         {
             // modify row in db
+            var toolFromId = await _context.Tools.FindAsync(id);
+            if (toolFromId == null)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception.Message);
+
+                return BadRequest(errors);
+            }
+
+            toolFromId.Name = tool.Name;
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetTool", new { id = toolFromId.Id }, tool);
         }
 
         // DELETE api/tools/5
         [Authorize]
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async void Delete(int id)
         {
             //Delete row
+            logger.LogWarning("/api/tools/" + id + " DELETE");
+            var tool = _context.Tools.Find(id);
+            if (tool == null)
+            {
+                logger.LogWarning("Tool not found...");
+                //return NotFound();
+            }
+            else
+            {
+                _context.Tools.Remove(tool);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

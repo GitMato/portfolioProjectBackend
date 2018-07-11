@@ -103,6 +103,7 @@ namespace asddotnetcore.Controllers
 
                 return BadRequest(errors);
             }
+            //logger.LogCritical("Tools: " + project.Tools);
 
             projectFromId.Name = project.Name;
             projectFromId.ImgUrl = project.ImgUrl;
@@ -114,7 +115,7 @@ namespace asddotnetcore.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Get", new { id = project.Id }, project);
+            return CreatedAtAction("Get", new { id = projectFromId.Id }, project);
 
         }
 

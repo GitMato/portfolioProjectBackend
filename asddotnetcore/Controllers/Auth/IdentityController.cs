@@ -22,8 +22,8 @@ using Microsoft.Extensions.Logging;
 namespace asddotnetcore.Controllers
 {
 
-    
 
+    [Produces("application/json")]
     [EnableCors("MyPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -92,7 +92,7 @@ namespace asddotnetcore.Controllers
         }
 
         // POST api/identity/login
-        [Produces("application/json")]
+        //[Produces("application/json")]
         [HttpPost]
         public async Task<object> Login([FromBody]LoginViewModel model)
         {

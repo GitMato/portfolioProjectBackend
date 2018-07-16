@@ -90,7 +90,7 @@ namespace asddotnetcore.Controllers
         }
 
         // PUT api/tools/5
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Tool tool)
         {
@@ -117,7 +117,7 @@ namespace asddotnetcore.Controllers
         }
 
         // DELETE api/tools/5
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async void Delete(int id)
         {

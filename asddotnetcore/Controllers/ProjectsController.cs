@@ -62,7 +62,7 @@ namespace asddotnetcore.Controllers
         }
 
         // POST api/projects
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Project project)
         {
@@ -85,7 +85,7 @@ namespace asddotnetcore.Controllers
         }
 
         // PUT api/projects/5
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Project project)
         {
@@ -121,7 +121,7 @@ namespace asddotnetcore.Controllers
 
         // DELETE api/projects/5
         // Need to return Task otherwise the DbContext is disposed before all actions are done. ( concurrency problem? )
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyIdentity.Models
 {
-    public class Admin : IdentityUser
+    public class ApiUser : IdentityUser
     {
         public bool IsAdmin { get; set; } = false;
     }

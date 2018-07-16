@@ -73,7 +73,7 @@ namespace asddotnetcore
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
                                                 options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
             // Register identity
-            services.AddIdentity<Admin, IdentityRole>()
+            services.AddIdentity<ApiUser, IdentityRole>()
                 .AddEntityFrameworkStores<MyIdentityContext>()
                 .AddDefaultTokenProviders();
 

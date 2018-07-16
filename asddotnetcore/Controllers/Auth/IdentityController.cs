@@ -31,15 +31,15 @@ namespace asddotnetcore.Controllers
     {
         ILogger logger = new LoggerFactory().AddConsole().CreateLogger("IdentityController");
 
-        private readonly SignInManager<Admin> _signInManager;
-        private readonly UserManager<Admin> _userManager;
+        private readonly SignInManager<ApiUser> _signInManager;
+        private readonly UserManager<ApiUser> _userManager;
         private readonly MyIdentityContext _identityContext;
         private readonly IConfiguration _configuration;
         private readonly JwtIssuerOptions _jwtOptions;
 
-        public IdentityController(UserManager<Admin> userManager, 
+        public IdentityController(UserManager<ApiUser> userManager, 
                                   MyIdentityContext ctx, 
-                                  SignInManager<Admin> signInManager,
+                                  SignInManager<ApiUser> signInManager,
                                   IConfiguration configuration,
                                   IOptions<JwtIssuerOptions> jwtOptions)
         {
@@ -114,8 +114,8 @@ namespace asddotnetcore.Controllers
                 return new BadRequestObjectResult(error: "Wrong username+password combination!");
             }
 
-            var admin = _userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
-            return await GenerateJwtToken(model.Username, admin);
+            var user = _userManager.Users.SingleOrDefault(r => r.UserName == model.Username);
+            return await GenerateJwtToken(model.Username, user);
         }
 
         // PUT api/<controller>/5
@@ -153,12 +153,12 @@ namespace asddotnetcore.Controllers
 
         }
 
-        public Admin GenerateAdmin(RegistrationViewModel model)
+        public ApiUser GenerateAdmin(RegistrationViewModel model)
         {
-            return new Admin { UserName = model.Username };
+            return new ApiUser { UserName = model.Username };
         }
 
-        private async Task<object> GenerateJwtToken(string username, Admin user)
+        private async Task<object> GenerateJwtToken(string username, ApiUser user)
         {
             var claims = new List<Claim>
             {

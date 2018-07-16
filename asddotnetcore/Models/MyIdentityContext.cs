@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace MyIdentity.Models
 {
-    public class MyIdentityContext : IdentityDbContext<Admin>
+    public class MyIdentityContext : IdentityDbContext<ApiUser>
     {
         public MyIdentityContext(DbContextOptions options) : base(options) { }
 
-        public DbSet <Admin> Admins { get; set; }
+        public DbSet <ApiUser> ApiUsers { get; set; }
     }
 }

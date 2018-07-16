@@ -24,7 +24,7 @@ namespace asddotnetcore.Controllers
 
 
     [Produces("application/json")]
-    [EnableCors("MyPolicy")]
+    [EnableCors("MyCorsPolicy")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class IdentityController : Controller
@@ -158,14 +158,15 @@ namespace asddotnetcore.Controllers
             return new Admin { UserName = model.Username };
         }
 
-        private async Task<object> GenerateJwtToken(string username, IdentityUser user)
+        private async Task<object> GenerateJwtToken(string username, Admin user)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 //new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim("Admin", user.IsAdmin.ToString())
             };
 
             

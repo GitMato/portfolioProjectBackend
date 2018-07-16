@@ -18,7 +18,7 @@ namespace asddotnetcore.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("MyPolicy")]
+    [EnableCors("MyCorsPolicy")]
     public class ToolsController : ControllerBase
     {
         ILogger logger = new LoggerFactory().AddConsole().CreateLogger("ToolsController");
@@ -69,7 +69,7 @@ namespace asddotnetcore.Controllers
         }
 
         // api/tools
-        [Authorize]
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Tool tool)
         //public IActionResult Post([FromBody] string name)

@@ -42,7 +42,6 @@ namespace asddotnetcore
         public IConfiguration Configuration { get; }
 
         
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -53,7 +52,7 @@ namespace asddotnetcore
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // TODO DON'T ALLOW ALL SITES TO ACCESS
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            services.AddCors(o => o.AddPolicy("MyCorsPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -64,7 +63,7 @@ namespace asddotnetcore
             // Eikö tän voisi tehä helpomminkin?
             services.Configure<MvcOptions>(options =>
             {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
+                options.Filters.Add(new CorsAuthorizationFilterFactory("MyCorsPolicy"));
             });
 
             // Register Project and Tool context for db
@@ -77,6 +76,8 @@ namespace asddotnetcore
             services.AddIdentity<Admin, IdentityRole>()
                 .AddEntityFrameworkStores<MyIdentityContext>()
                 .AddDefaultTokenProviders();
+
+            
 
             // JWT - get options from app settings (JwtIssuerOptions -class)
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
@@ -105,6 +106,7 @@ namespace asddotnetcore
                 RequireExpirationTime = false,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero, // remove delay of token when expire
+
             };
 
             services.AddAuthentication(options =>
@@ -118,12 +120,12 @@ namespace asddotnetcore
                 configureOptions.SaveToken = true;
             });
 
-            //services.AddAuthorization(options =>
-            //{
-            //    // checks for the presence of "Id" in the identity aka. every identity has "Admin" -status
-            //    options.AddPolicy("Admin", policy => policy.RequireClaim("Id"));
-            //    JwtConstants.
-            //});
+            // add authorization policy for admins
+            services.AddAuthorization(options =>
+            {        
+                // checks if the jwtToken has attribute "Admin" with value "True". JwtIsValidated before this. Thus, the data provided in jwt is legit.
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Admin", "True"));
+            });
 
         }
 
@@ -131,14 +133,10 @@ namespace asddotnetcore
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             
-
             Console.WriteLine("Portfolio REST API");
             
             var logger = loggerFactory.CreateLogger("Startup");
-            logger.LogWarning("Hi!");
-            logger.LogInformation("Hi info!");
-
-            // logger testing ends
+            logger.LogInformation("Booting");
 
             if (env.IsDevelopment())
             {
@@ -150,7 +148,7 @@ namespace asddotnetcore
             }
 
             // use CORS
-            app.UseCors("MyPolicy");
+            app.UseCors("MyCorsPolicy");
             //app.UseCors(builder =>
             //    builder.WithOrigins("*")
             //    .AllowAnyHeader()

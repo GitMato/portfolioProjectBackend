@@ -15,13 +15,13 @@ namespace asddotnetcore.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("MyPolicy")]
+    [EnableCors("MyCorsPolicy")]
     public class ProjectsController : ControllerBase
     {
 
         ILogger logger = new LoggerFactory().AddConsole().CreateLogger("ProjectsController");
 
-        private readonly MyWebApiContext _context;
+        private MyWebApiContext _context;
 
         public ProjectsController(MyWebApiContext ctx)
         {
@@ -120,9 +120,10 @@ namespace asddotnetcore.Controllers
         }
 
         // DELETE api/projects/5
+        // Need to return Task otherwise the DbContext is disposed before all actions are done. ( concurrency problem? )
         [Authorize]
         [HttpDelete("{id}")]
-        public async void Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             //Delete row
             logger.LogWarning("/api/projects/" + id + " DELETE");
@@ -130,12 +131,13 @@ namespace asddotnetcore.Controllers
             if (project == null)
             {
                 logger.LogWarning("Project not found...");
-                //return NotFound();
+                return NotFound();
             }
             else
             { 
                 _context.Projects.Remove(project);
                 await _context.SaveChangesAsync();
+                return Ok();
             }
         }
     }

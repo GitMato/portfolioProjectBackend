@@ -8,6 +8,6 @@ namespace MyIdentity.Models
 {
     public class Admin : IdentityUser
     {
-        
+        public bool IsAdmin { get; set; } = false;
     }
 }

@@ -110,8 +110,15 @@ namespace asddotnetcore.Controllers
             projectFromId.ImgAlt = project.ImgAlt;
             projectFromId.Tools = project.Tools;
             projectFromId.Extraimg = project.Extraimg;
+
+            //for (var i = 0; i < project.Extraimg.Count(); i++)
+            //{
+            //    logger.LogWarning(project.Extraimg[i]);
+            //}
+
             projectFromId.Description = project.Description;
             projectFromId.Details = project.Details;
+            projectFromId.ExtraUrls = project.ExtraUrls;
 
             await _context.SaveChangesAsync();
 

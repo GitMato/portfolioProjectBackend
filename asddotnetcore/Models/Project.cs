@@ -21,7 +21,9 @@ namespace MyWebApi.Models
         //public List<Tool> Tools { get; set; }
         [StringLength(512, ErrorMessage = "Details cannot be longer than 512 characters.")]
         public string Details { get; set; }
-        public string[] Extraimg { get; set; }
+
+        public List<string> Extraimg { get; set; }
+        public List<string> ExtraUrls { get; set; }
         
         public List<int> Tools { get; set; }
         //public ICollection<ProjectToTool> ProjectToTools { get; } = new List<ProjectToTool>();

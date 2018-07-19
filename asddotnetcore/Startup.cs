@@ -41,7 +41,7 @@ namespace asddotnetcore
 
         public IConfiguration Configuration { get; }
 
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -73,7 +73,17 @@ namespace asddotnetcore
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
                                                 options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
             // Register identity
-            services.AddIdentity<ApiUser, IdentityRole>()
+            services.AddIdentity<ApiUser, IdentityRole>(options =>
+                { 
+                    //password requirements
+                    options.Password.RequireDigit = true;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequiredUniqueChars = 2;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = true;
+                    
+                })
                 .AddEntityFrameworkStores<MyIdentityContext>()
                 .AddDefaultTokenProviders();
 

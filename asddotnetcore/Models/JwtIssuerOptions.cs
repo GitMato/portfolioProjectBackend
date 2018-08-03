@@ -29,8 +29,8 @@ namespace MyIdentity.Models
         // "iat" (Issued At) Claim - The "iat" (issued at) claim identifies the time at which the JWT was issued.
         public DateTime IssuedAt => DateTime.UtcNow;
 
-        // Set the timespan the token will be valid for (default is 120 min)
-        public TimeSpan ValidFor { get; set; } = TimeSpan.FromMinutes(120);
+        // Set the timespan the token will be valid for (default is 1 day)
+        public TimeSpan ValidFor { get; set; } = TimeSpan.FromDays(1);
 
 
 

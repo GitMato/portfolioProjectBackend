@@ -15,10 +15,10 @@ namespace MyWebApi.Models
         [DataType(DataType.Url)]
         public string ImgUrl { get; set; }
         public string ImgAlt { get; set; }
+
         [StringLength(256, ErrorMessage = "Description cannot be longer than 256 characters.")]
         public string Description { get; set; }
-        //[ForeignKey("ProjectID")]
-        //public List<Tool> Tools { get; set; }
+
         [StringLength(512, ErrorMessage = "Details cannot be longer than 512 characters.")]
         public string Details { get; set; }
 
@@ -26,18 +26,7 @@ namespace MyWebApi.Models
         public List<string> ExtraUrls { get; set; }
         
         public List<int> Tools { get; set; }
-        //public ICollection<ProjectToTool> ProjectToTools { get; } = new List<ProjectToTool>();
     }
-
-
-    //public class ProjectToTool
-    //{
-    //    public int ProjectId { get; set; }
-    //    public Project Project { get; set; }
-
-    //    public int ToolId { get; set; }
-    //    public Tool Tool { get; set; }
-    //}
 }
 
 /**

@@ -52,6 +52,7 @@ namespace asddotnetcore
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // TODO DON'T ALLOW ALL SITES TO ACCESS
+            // Create MyCorsPolicy to allow multiple policies (not needed in this project)
             services.AddCors(o => o.AddPolicy("MyCorsPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -60,7 +61,7 @@ namespace asddotnetcore
             }));
 
 
-            // Eikö tän voisi tehä helpomminkin?
+            // Add the Cors policy
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("MyCorsPolicy"));
@@ -92,7 +93,7 @@ namespace asddotnetcore
             // JWT - get options from app settings (JwtIssuerOptions -class)
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
 
-            // Configure JwtIssuerOptions
+            // Configure JwtIssuerOptions object from appsettings
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
@@ -139,7 +140,7 @@ namespace asddotnetcore
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             

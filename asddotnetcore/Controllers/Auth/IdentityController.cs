@@ -50,20 +50,6 @@ namespace asddotnetcore.Controllers
             _jwtOptions = jwtOptions.Value;
         }
 
-        // GET: api/<controller>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET api/<controller>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
         // POST api/identity/register
         [HttpPost]
         public async Task<IActionResult> Register([FromBody]RegistrationViewModel model)
@@ -73,22 +59,15 @@ namespace asddotnetcore.Controllers
                 return BadRequest(ModelState);
             }
 
-            // map info from model to userIdentity
-            //var userIdentity = _mapper.Map(model);
-
-            var userIdentity = GenerateAdmin(model);
+            var userIdentity = GenerateUser(model);
 
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
 
             if (!result.Succeeded) return new BadRequestObjectResult(error: "Error! " + result.Errors.ToString());
             
             await _identityContext.SaveChangesAsync();
-
-            //await _signInManager.SignInAsync(user, false);
-            //return await GenerateJwtToken(model.Email, user);
             
             return Ok("Registration complete!");
-            //return Cre
         }
 
         // POST api/identity/login
@@ -101,12 +80,6 @@ namespace asddotnetcore.Controllers
                 return BadRequest(ModelState);
             }
 
-            // map info from model to userIdentity
-            //var userIdentity = _mapper.Map(model);
-
-            //var userIdentity = GenerateAdmin(model);
-
-
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
 
             if (!result.Succeeded)
@@ -118,42 +91,30 @@ namespace asddotnetcore.Controllers
             return await GenerateJwtToken(model.Username, user);
         }
 
-        // PUT api/<controller>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody]string value)
-        //{
-        //}
-
-        //// DELETE api/<controller>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
-
         // no need for this
         // https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/consumer-apis/password-hashing?view=aspnetcore-2.1
-        public string GenerateSaltedHash(string password)
-        {
-            // generate a 128-bit salt using a secure PRNG
-            byte[] salt = new byte[128 / 8];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
+        //public string GenerateSaltedHash(string password)
+        //{
+        //    // generate a 128-bit salt using a secure PRNG
+        //    byte[] salt = new byte[128 / 8];
+        //    using (var rng = RandomNumberGenerator.Create())
+        //    {
+        //        rng.GetBytes(salt);
+        //    }
 
-            //derive a 256-bit subkey
-            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8));
+        //    //derive a 256-bit subkey
+        //    string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+        //        password: password,
+        //        salt: salt,
+        //        prf: KeyDerivationPrf.HMACSHA1,
+        //        iterationCount: 10000,
+        //        numBytesRequested: 256 / 8));
 
-            return hashed;
+        //    return hashed;
 
-        }
+        //}
 
-        public ApiUser GenerateAdmin(RegistrationViewModel model)
+        public ApiUser GenerateUser(RegistrationViewModel model)
         {
             return new ApiUser { UserName = model.Username };
         }
@@ -186,9 +147,9 @@ namespace asddotnetcore.Controllers
 
                 issuer: _jwtOptions.Issuer,
                 audience: _jwtOptions.Audience,
-                //claims: claims,
                 //notBefore: _jwtOptions.NotBefore,
-                expires: expires
+                //expires: expires
+                expires: _jwtOptions.Expiration
                 //signingCredentials: _jwtOptions.SigningCredentials
             );
 

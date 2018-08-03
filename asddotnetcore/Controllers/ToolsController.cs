@@ -30,16 +30,6 @@ namespace asddotnetcore.Controllers
             _context = ctx;
         }
 
-
-
-        //[HttpGet]
-        //public ActionResult<IEnumerable<string>> Get()
-        //{
-        //    logger.LogWarning("/api/tools GET");
-        //    return new string[] { "Tools:", "testiTool" };
-        //   
-        //}
-
         // api/tools
         [HttpGet]
         public async Task<ActionResult<List<Tool>>> Get()
@@ -119,7 +109,7 @@ namespace asddotnetcore.Controllers
         // DELETE api/tools/5
         [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
-        public async void Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             //Delete row
             logger.LogWarning("/api/tools/" + id + " DELETE");
@@ -127,12 +117,13 @@ namespace asddotnetcore.Controllers
             if (tool == null)
             {
                 logger.LogWarning("Tool not found...");
-                //return NotFound();
+                return NotFound();
             }
             else
             {
                 _context.Tools.Remove(tool);
                 await _context.SaveChangesAsync();
+                return Ok();
             }
         }
     }

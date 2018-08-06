@@ -46,7 +46,11 @@ namespace asddotnetcore
         public void ConfigureServices(IServiceCollection services)
         {
             // Get SecretKey and generate new symmetric key
-            _secretKey = Configuration["SecretKey"];
+            // remember to set secret key to hosting environment
+            _secretKey = Environment.GetEnvironmentVariable("SECRETKEY");
+            //_secretKey = Configuration["SecretKey"];
+
+
             _signinKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_secretKey));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -67,12 +71,28 @@ namespace asddotnetcore
                 options.Filters.Add(new CorsAuthorizationFilterFactory("MyCorsPolicy"));
             });
 
-            // Register Project and Tool context for db
-            services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
 
-            // Register identity context for db
+            //if (env.IsDevelopment())
+            //{
+
+                // Register Project and Tool context for db
+                //services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+
+                // Register identity context for db
+                //services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
+                //                                    options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+
+            //}
+            //else
+            //{
+
+                
+            var databaseURL = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(databaseURL));
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
-                                                options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+                                                    options.UseNpgsql(databaseURL));
+            //}
             // Register identity
             services.AddIdentity<ApiUser, IdentityRole>(options =>
                 { 

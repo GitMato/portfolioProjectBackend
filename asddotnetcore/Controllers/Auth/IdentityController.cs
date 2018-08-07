@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -48,6 +49,11 @@ namespace asddotnetcore.Controllers
             _signInManager = signInManager;
             _configuration = configuration;
             _jwtOptions = jwtOptions.Value;
+
+            if (!_identityContext.Database.EnsureCreated())
+            {
+                _identityContext.Database.Migrate();
+            }
         }
 
         // POST api/identity/register

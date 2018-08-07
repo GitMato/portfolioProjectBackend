@@ -88,10 +88,24 @@ namespace asddotnetcore
 
                 
             var databaseURL = Environment.GetEnvironmentVariable("DATABASE_URL");
+            databaseURL = "postgres://azaqhrydsxumsz:f8a4dd25b7f4df797254b74efb7738e05fef4b12e91e258f5ceb95615bf143fd@ec2-54-217-218-80.eu-west-1.compute.amazonaws.com:5432/dod73kmdgju67";
+            //postgres://azaqhrydsxumsz:f8a4dd25b7f4df797254b74efb7738e05fef4b12e91e258f5ceb95615bf143fd@ec2-54-217-218-80.eu-west-1.compute.amazonaws.com:5432/dod73kmdgju67
+            
+            databaseURL = databaseURL.Substring(11); // remove postgres://
+            var databaseURLarr = databaseURL.Split(":");
 
-            services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(databaseURL));
+            var pgUserID = databaseURLarr[0];
+            var pgPassword = databaseURLarr[1].Split("@")[0];
+            var pgHost = databaseURLarr[1].Split("@")[1];
+            var pgPort = databaseURLarr[2].Split("/")[0];
+            var pgDbName = databaseURLarr[2].Split("/")[1];
+
+            
+            var pgConnectionString = $"User ID = {pgUserID};Server={pgHost};Port={pgPort};Database={pgDbName};Password={pgPassword};Integrated Security=true;Pooling=true;";
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(pgConnectionString));
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
-                                                    options.UseNpgsql(databaseURL));
+                                                    options.UseNpgsql(pgConnectionString));
             //}
             // Register identity
             services.AddIdentity<ApiUser, IdentityRole>(options =>

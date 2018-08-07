@@ -50,10 +50,7 @@ namespace asddotnetcore.Controllers
             _configuration = configuration;
             _jwtOptions = jwtOptions.Value;
 
-            if (!_identityContext.Database.EnsureCreated())
-            {
-                _identityContext.Database.Migrate();
-            }
+            //_identityContext.Database.Migrate();
         }
 
         // POST api/identity/register

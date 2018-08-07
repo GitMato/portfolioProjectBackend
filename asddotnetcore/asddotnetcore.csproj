@@ -33,4 +33,9 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.0" />
   </ItemGroup>
 
+  <Target Name="UpdateDatabase">
+    <Exec Command="dotnet ef database update --context MyWebApiContext" />
+    <Exec Command="dotnet ef database update --context MyIdentityContext" />
+  </Target>
+
 </Project>

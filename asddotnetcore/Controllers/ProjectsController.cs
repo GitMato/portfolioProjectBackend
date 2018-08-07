@@ -27,10 +27,10 @@ namespace asddotnetcore.Controllers
         {
             _context = ctx;
 
-            if (!_context.Database.EnsureCreated())
-            {
-                _context.Database.Migrate();
-            }
+            //if (!_context.Database.EnsureCreated())
+            //{
+            //    _context.Database.Migrate();
+            //}
         }
 
 

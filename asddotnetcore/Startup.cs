@@ -48,6 +48,7 @@ namespace asddotnetcore
             // Get SecretKey and generate new symmetric key
             // remember to set secret key to hosting environment
             _secretKey = Environment.GetEnvironmentVariable("SECRETKEY");
+            // for local dev
             //_secretKey = Configuration["SecretKey"];
 
 
@@ -75,33 +76,40 @@ namespace asddotnetcore
             //if (env.IsDevelopment())
             //{
 
-                // Register Project and Tool context for db
-                //services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+            // Register Project and Tool context for db
+            //services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
 
-                // Register identity context for db
-                //services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
-                //                                    options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
+            // Register identity context for db
+            //services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
+            //                                    options.UseNpgsql(Configuration.GetConnectionString("MyWebApiConnection")));
 
             //}
             //else
             //{
+            var pgConnectionString = "";
+            try
+            {
+                var databaseURL = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                
-            var databaseURL = Environment.GetEnvironmentVariable("DATABASE_URL");
-            databaseURL = "postgres://azaqhrydsxumsz:f8a4dd25b7f4df797254b74efb7738e05fef4b12e91e258f5ceb95615bf143fd@ec2-54-217-218-80.eu-west-1.compute.amazonaws.com:5432/dod73kmdgju67";
-            //postgres://azaqhrydsxumsz:f8a4dd25b7f4df797254b74efb7738e05fef4b12e91e258f5ceb95615bf143fd@ec2-54-217-218-80.eu-west-1.compute.amazonaws.com:5432/dod73kmdgju67
-            
-            databaseURL = databaseURL.Substring(11); // remove postgres://
-            var databaseURLarr = databaseURL.Split(":");
+                databaseURL = databaseURL.Substring(11); // remove postgres://
+                var databaseURLarr = databaseURL.Split(":");
 
-            var pgUserID = databaseURLarr[0];
-            var pgPassword = databaseURLarr[1].Split("@")[0];
-            var pgHost = databaseURLarr[1].Split("@")[1];
-            var pgPort = databaseURLarr[2].Split("/")[0];
-            var pgDbName = databaseURLarr[2].Split("/")[1];
+                var pgUserID = databaseURLarr[0];
+                var pgPassword = databaseURLarr[1].Split("@")[0];
+                var pgHost = databaseURLarr[1].Split("@")[1];
+                var pgPort = databaseURLarr[2].Split("/")[0];
+                var pgDbName = databaseURLarr[2].Split("/")[1];
 
-            
-            var pgConnectionString = $"User ID = {pgUserID};Server={pgHost};Port={pgPort};Database={pgDbName};Password={pgPassword};Integrated Security=true;Pooling=true;";
+
+                pgConnectionString = $"User ID = {pgUserID};Server={pgHost};Port={pgPort};Database={pgDbName};Password={pgPassword};Integrated Security=true;Pooling=true;";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: Exception in databaseURL");
+            }
+
+            // for local dev
+            //pgConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
             services.AddEntityFrameworkNpgsql().AddDbContext<MyWebApiContext>(opt => opt.UseNpgsql(pgConnectionString));
             services.AddEntityFrameworkNpgsql().AddDbContext<MyIdentityContext>(options =>
@@ -205,6 +213,7 @@ namespace asddotnetcore
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
+
         }
     }
 }

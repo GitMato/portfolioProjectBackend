@@ -135,7 +135,8 @@ namespace asddotnetcore.Controllers
 
             
             //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecretKey"]));
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["SecretKey"]));
+            //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["SecretKey"]));
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("SECRETKEY")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             //var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["JwtExpireDays"]));
             var expires = DateTime.Now.AddDays(1);

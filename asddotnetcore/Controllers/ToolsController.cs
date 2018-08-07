@@ -28,6 +28,11 @@ namespace asddotnetcore.Controllers
         public ToolsController(MyWebApiContext ctx)
         {
             _context = ctx;
+
+            if (!_context.Database.EnsureCreated())
+            {
+                _context.Database.Migrate();
+            }
         }
 
         // api/tools

@@ -26,6 +26,11 @@ namespace asddotnetcore.Controllers
         public ProjectsController(MyWebApiContext ctx)
         {
             _context = ctx;
+
+            if (!_context.Database.EnsureCreated())
+            {
+                _context.Database.Migrate();
+            }
         }
 
 

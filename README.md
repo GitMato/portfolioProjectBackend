@@ -5,6 +5,7 @@ deployed with frontend: https://portfolio-mato.herokuapp.com
 REST API for the portfolio. 
 Frontend can be found: https://github.com/GitMato/portfolioProject
 
+Made with .NET core.
 
 ### API documentation
 
